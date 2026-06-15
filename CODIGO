@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizzaria</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f5f5f5;
+}
+
+header{
+    background:#d62828;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+header h1{
+    font-size:2rem;
+}
+
+/* CARROSSEL */
+
+.carousel-container{
+    overflow:hidden;
+    padding:20px;
+}
+
+.carousel{
+    display:flex;
+    gap:20px;
+    cursor:grab;
+    user-select:none;
+    overflow-x:auto;
+    scroll-behavior:smooth;
+}
+
+.carousel::-webkit-scrollbar{
+    display:none;
+}
+
+.card{
+    min-width:280px;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    transition:.3s;
+    cursor:pointer;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.image{
+    height:200px;
+    background:#ddd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:bold;
+    color:#555;
+}
+
+.info{
+    padding:15px;
+}
+
+.info h3{
+    margin-bottom:10px;
+}
+
+.price{
+    color:#d62828;
+    font-size:1.3rem;
+    font-weight:bold;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content{
+    width:90%;
+    max-width:500px;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.modal-img{
+    height:250px;
+    background:#ddd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    font-weight:bold;
+}
+
+.modal-info{
+    padding:20px;
+}
+
+.close{
+    background:#d62828;
+    color:white;
+    border:none;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+@media(max-width:600px){
+    .card{
+        min-width:240px;
+    }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🍕 Minha Pizzaria</h1>
+</header>
+
+<div class="carousel-container">
+    <div class="carousel" id="carousel">
+
+        <div class="card" onclick="openModal('Pizza 1', 'R$ 00,00', 'PIZZA1')">
+            <div class="image">PIZZA1</div>
+            <div class="info">
+                <h3>Pizza 1</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 2', 'R$ 00,00', 'PIZZA2')">
+            <div class="image">PIZZA2</div>
+            <div class="info">
+                <h3>Pizza 2</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 3', 'R$ 00,00', 'PIZZA3')">
+            <div class="image">PIZZA3</div>
+            <div class="info">
+                <h3>Pizza 3</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 4', 'R$ 00,00', 'PIZZA4')">
+            <div class="image">PIZZA4</div>
+            <div class="info">
+                <h3>Pizza 4</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 5', 'R$ 00,00', 'PIZZA5')">
+            <div class="image">PIZZA5</div>
+            <div class="info">
+                <h3>Pizza 5</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <div class="modal-img" id="modalImg"></div>
+
+        <div class="modal-info">
+            <h2 id="modalTitle"></h2>
+            <h3 id="modalPrice"></h3>
+
+            <button class="close" onclick="closeModal()">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// MODAL
+
+function openModal(nome, preco, imagem){
+    document.getElementById("modalTitle").innerText = nome;
+    document.getElementById("modalPrice").innerText = preco;
+    document.getElementById("modalImg").innerText = imagem;
+
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display = "none";
+}
+
+// CARROSSEL ARRASTÁVEL
+
+const slider = document.getElementById("carousel");
+
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener("mousedown", (e)=>{
+    isDown = true;
+    slider.style.cursor = "grabbing";
+
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener("mouseleave", ()=>{
+    isDown = false;
+    slider.style.cursor = "grab";
+});
+
+slider.addEventListener("mouseup", ()=>{
+    isDown = false;
+    slider.style.cursor = "grab";
+});
+
+slider.addEventListener("mousemove", (e)=>{
+    if(!isDown) return;
+
+    e.preventDefault();
+
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2;
+
+    slider.scrollLeft = scrollLeft - walk;
+});
+
+// TOUCH
+
+slider.addEventListener("touchstart", (e)=>{
+    startX = e.touches[0].pageX;
+    scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener("touchmove", (e)=>{
+    const x = e.touches[0].pageX;
+    const walk = (x - startX) * 2;
+
+    slider.scrollLeft = scrollLeft - walk;
+});
+
+</script>
+
+</body>
+</html>
