@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizzaria</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#F26A00;
+}
+
+header{
+    background:#d62828;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+header h1{
+    font-size:2rem;
+}
+
+/* CARROSSEL */
+
+.photo-carousel-container{
+    overflow:hidden;
+    width:100%;
+    margin-top:20px;
+    position:relative;
+}
+
+.photo-carousel{
+    display:flex;
+    gap:20px;
+    padding:0 20px;
+    user-select:none;
+    overflow:hidden;
+    scroll-behavior:smooth;
+}
+
+.photo-carousel::-webkit-scrollbar{
+    display:none;
+}
+
+.photo-arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    border:none;
+    background:rgba(0,0,0,0.35);
+    color:white;
+    font-size:1.8rem;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:2;
+}
+
+.photo-arrow:hover{
+    background:rgba(0,0,0,0.55);
+}
+
+.photo-prev{
+    left:12px;
+}
+
+.photo-next{
+    right:12px;
+}
+
+.photo-card{
+    min-width:calc(100% - 40px);
+    width:calc(100% - 40px);
+    height:320px;
+    border-radius:20px;
+    flex:0 0 calc(100% - 40px);
+    box-shadow:0 8px 22px rgba(0,0,0,0.18);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:2rem;
+    font-weight:bold;
+    text-shadow:0 2px 10px rgba(0,0,0,0.4);
+    background-size:cover;
+    background-position:center;
+}
+
+.carousel-container{
+    overflow:hidden;
+    padding:20px;
+    margin-top:30px;
+}
+
+.carousel{
+    display:flex;
+    gap:20px;
+    cursor:grab;
+    user-select:none;
+    overflow-x:auto;
+    scroll-behavior:smooth;
+    touch-action: pan-y;
+}
+
+.carousel::-webkit-scrollbar{
+    display:none;
+}
+
+.card{
+    min-width:280px;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    transition:.3s;
+    cursor:pointer;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.image{
+    height:200px;
+    background:#ddd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:bold;
+    color:#555;
+}
+
+.info{
+    padding:15px;
+}
+
+.info h3{
+    margin-bottom:10px;
+}
+
+.price{
+    color:#d62828;
+    font-size:1.3rem;
+    font-weight:bold;
+}
+
+.options-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
+    padding:0 20px 40px;
+    margin-top:30px;
+}
+
+.big-card{
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+    cursor:pointer;
+    transition:transform .25s ease, box-shadow .25s ease;
+    display:flex;
+    flex-direction:column;
+}
+
+.big-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 10px 22px rgba(0,0,0,0.18);
+}
+
+.big-image{
+    height:220px;
+    background:#f1f1f1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:36px;
+    color:#555;
+    font-weight:bold;
+}
+
+.big-info{
+    padding:24px;
+}
+
+.big-info h3{
+    margin-bottom:12px;
+    font-size:1.4rem;
+}
+
+.big-info p{
+    margin-bottom:16px;
+    color:#333;
+    line-height:1.6;
+}
+
+@media(max-width:800px){
+    .options-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content{
+    width:90%;
+    max-width:500px;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.modal-img{
+    height:250px;
+    background:#ddd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    font-weight:bold;
+}
+
+.modal-info{
+    padding:20px;
+}
+
+.close{
+    background:#d62828;
+    color:white;
+    border:none;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+@media(max-width:600px){
+    .card{
+        min-width:240px;
+    }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🍕 A Arte da Pizza</h1>
+</header>
+
+<div class="photo-carousel-container">
+    <button class="photo-arrow photo-prev" onclick="movePhoto(-1)">&#8249;</button>
+    <button class="photo-arrow photo-next" onclick="movePhoto(1)">&#8250;</button>
+    <div class="photo-carousel">
+        <div class="photo-card" style="background-image: linear-gradient(135deg, #d62828 0%, #f77f00 100%);">FOTO 1</div>
+        <div class="photo-card" style="background-image: linear-gradient(135deg, #005f73 0%, #0a9396 100%);">FOTO 2</div>
+        <div class="photo-card" style="background-image: linear-gradient(135deg, #9b2226 0%, #ee9b00 100%);">FOTO 3</div>
+        <div class="photo-card" style="background-image: linear-gradient(135deg, #283618 0%, #606c38 100%);">FOTO 4</div>
+    </div>
+</div>
+
+<div class="carousel-container">
+    <div class="carousel" id="carousel">
+
+        <div class="card" onclick="openModal('Pizza 1', 'R$ 00,00', 'PIZZA1')">
+            <div class="image">PIZZA1</div>
+            <div class="info">
+                <h3>Pizza 1</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 2', 'R$ 00,00', 'PIZZA2')">
+            <div class="image">PIZZA2</div>
+            <div class="info">
+                <h3>Pizza 2</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 3', 'R$ 00,00', 'PIZZA3')">
+            <div class="image">PIZZA3</div>
+            <div class="info">
+                <h3>Pizza 3</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 4', 'R$ 00,00', 'PIZZA4')">
+            <div class="image">PIZZA4</div>
+            <div class="info">
+                <h3>Pizza 4</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 5', 'R$ 00,00', 'PIZZA5')">
+            <div class="image">PIZZA5</div>
+            <div class="info">
+                <h3>Pizza 5</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 6', 'R$ 00,00', 'PIZZA6')">
+            <div class="image">PIZZA6</div>
+            <div class="info">
+                <h3>Pizza 6</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('Pizza 7', 'R$ 00,00', 'PIZZA7')">
+            <div class="image">PIZZA7</div>
+            <div class="info">
+                <h3>Pizza 7</h3>
+                <div class="price">R$ 00,00</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="options-grid">
+    <div class="big-card" onclick="openModal('Pizza Especial', 'R$ 29,90', 'ESPECIAL')">
+        <div class="big-image">ESPECIAL</div>
+        <div class="big-info">
+            <h3>Pizza Especial</h3>
+            <p>Queijo extra, pepperoni crocante e manjericão fresco para uma experiência saborosa.</p>
+            <div class="price">R$ 29,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Suprema', 'R$ 34,90', 'SUPREMA')">
+        <div class="big-image">SUPREMA</div>
+        <div class="big-info">
+            <h3>Pizza Suprema</h3>
+            <p>Cobertura completa com calabresa, cebola, pimentão e azeitonas.</p>
+            <div class="price">R$ 34,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Portuguesa', 'R$ 32,90', 'PORTUGUESA')">
+        <div class="big-image">PORTUGUESA</div>
+        <div class="big-info">
+            <h3>Pizza Portuguesa</h3>
+            <p>Presunto, ovos, ervilhas e queijo, perfeita para quem não abre mão de sabor clássico.</p>
+            <div class="price">R$ 32,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Veggie', 'R$ 28,90', 'VEGGIE')">
+        <div class="big-image">VEGGIE</div>
+        <div class="big-info">
+            <h3>Pizza Veggie</h3>
+            <p>Legumes grelhados, tomate seco e queijo mozzarella para uma escolha leve e saborosa.</p>
+            <div class="price">R$ 28,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Quatro Queijos', 'R$ 30,90', '4QUEIJOS')">
+        <div class="big-image">4 QUEIJOS</div>
+        <div class="big-info">
+            <h3>Pizza Quatro Queijos</h3>
+            <p>Mozzarella, gorgonzola, parmesão e catupiry, cremosa e irresistível.</p>
+            <div class="price">R$ 30,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Frango com Catupiry', 'R$ 31,90', 'FRANGO')">
+        <div class="big-image">FRANGO</div>
+        <div class="big-info">
+            <h3>Pizza Frango com Catupiry</h3>
+            <p>Frango desfiado, catupiry e ervas finas, um clássico adorado por todos.</p>
+            <div class="price">R$ 31,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Pepperoni', 'R$ 33,90', 'PEPPERONI')">
+        <div class="big-image">PEPPERONI</div>
+        <div class="big-info">
+            <h3>Pizza Pepperoni</h3>
+            <p>Cobertura generosa de pepperoni picante com queijo extra derretido.</p>
+            <div class="price">R$ 33,90</div>
+        </div>
+    </div>
+
+    <div class="big-card" onclick="openModal('Pizza Calabresa', 'R$ 29,90', 'CALABRESA')">
+        <div class="big-image">CALABRESA</div>
+        <div class="big-info">
+            <h3>Pizza Calabresa</h3>
+            <p>Calabresa fatiada, cebola caramelizada e bastante queijo, sabor tradicional.</p>
+            <div class="price">R$ 29,90</div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <div class="modal-img" id="modalImg"></div>
+
+        <div class="modal-info">
+            <h2 id="modalTitle"></h2>
+            <h3 id="modalPrice"></h3>
+
+            <button class="close" onclick="closeModal()">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// MODAL
+
+function openModal(nome, preco, imagem){
+    document.getElementById("modalTitle").innerText = nome;
+    document.getElementById("modalPrice").innerText = preco;
+    document.getElementById("modalImg").innerText = imagem;
+
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display = "none";
+}
+
+// CONFIGURAÇÃO DO CARROSSEL DE FOTOS
+const photoCarousel = document.querySelector(".photo-carousel");
+const photoCards = Array.from(document.querySelectorAll(".photo-card"));
+let photoIndex = 0;
+
+function showPhoto(index){
+    const targetIndex = (index + photoCards.length) % photoCards.length;
+    photoIndex = targetIndex;
+    const card = photoCards[targetIndex];
+    const offset = card.offsetLeft - (photoCarousel.clientWidth - card.clientWidth) / 2;
+    photoCarousel.scrollTo({ left: offset, behavior: 'smooth' });
+}
+
+function movePhoto(direction){
+    showPhoto(photoIndex + direction);
+}
+
+showPhoto(0);
+
+// CONFIGURAÇÃO DE CARROSSEL INFINITO
+const slider = document.getElementById("carousel");
+let isDown = false;
+let startX;
+let scrollLeft;
+let velocity = 0;
+let lastX = 0;
+let lastTime = 0;
+let momentumID = null;
+
+function resetInfiniteScroll(){
+    const cards = slider.querySelectorAll(".card");
+    const cardCount = cards.length / 3;
+    const cardWidth = cards[0].offsetWidth + 20;
+    const edgeStart = cardWidth * 0.5;
+    const edgeEnd = slider.scrollWidth - slider.clientWidth - cardWidth * 0.5;
+
+    if(slider.scrollLeft <= edgeStart){
+        slider.scrollLeft += cardWidth * cardCount;
+    } else if(slider.scrollLeft >= edgeEnd){
+        slider.scrollLeft -= cardWidth * cardCount;
+    }
+}
+
+function stopMomentum(){
+    if(momentumID){
+        cancelAnimationFrame(momentumID);
+        momentumID = null;
+    }
+}
+
+function startDrag(clientX){
+    stopMomentum();
+    isDown = true;
+    slider.style.cursor = "grabbing";
+    slider.style.scrollBehavior = "auto";
+    startX = clientX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+    lastX = clientX;
+    lastTime = performance.now();
+    velocity = 0;
+}
+
+function moveDrag(clientX){
+    if(!isDown) return;
+    const x = clientX - slider.offsetLeft;
+    const walk = x - startX;
+    slider.scrollLeft = scrollLeft - walk;
+
+    const now = performance.now();
+    const dt = now - lastTime;
+    if(dt > 0){
+        velocity = (clientX - lastX) / dt;
+        lastX = clientX;
+        lastTime = now;
+    }
+}
+
+function animateMomentum(){
+    if(isDown) return;
+    velocity *= 0.96;
+    if(Math.abs(velocity) < 0.01){
+        resetInfiniteScroll();
+        return;
+    }
+
+    slider.scrollLeft -= velocity * 30;
+    resetInfiniteScroll();
+    momentumID = requestAnimationFrame(animateMomentum);
+}
+
+function endDrag(){
+    isDown = false;
+    slider.style.cursor = "grab";
+    slider.style.scrollBehavior = "smooth";
+    if(Math.abs(velocity) > 0.02){
+        animateMomentum();
+    } else {
+        resetInfiniteScroll();
+    }
+}
+
+function createInfiniteCarousel(){
+    const cards = Array.from(slider.querySelectorAll(".card"));
+    const cardCount = cards.length;
+
+    const startClones = cards.map(card => card.cloneNode(true));
+    const endClones = cards.map(card => card.cloneNode(true));
+
+    startClones.reverse().forEach(clone => slider.prepend(clone));
+    endClones.forEach(clone => slider.append(clone));
+
+    const cloneWidth = cards[0].offsetWidth + 20;
+    slider.scrollLeft = cloneWidth * cardCount;
+}
+
+createInfiniteCarousel();
+
+slider.addEventListener("mousedown", (e)=>{
+    e.preventDefault();
+    startDrag(e.pageX);
+});
+slider.addEventListener("mouseleave", endDrag);
+slider.addEventListener("mouseup", endDrag);
+slider.addEventListener("mousemove", (e)=>{
+    e.preventDefault();
+    moveDrag(e.pageX);
+});
+
+slider.addEventListener("touchstart", (e)=>{
+    const touch = e.touches[0];
+    startDrag(touch.clientX);
+});
+slider.addEventListener("touchend", endDrag);
+slider.addEventListener("touchmove", (e)=>{
+    e.preventDefault();
+    const touch = e.touches[0];
+    moveDrag(touch.clientX);
+});
+
+slider.addEventListener("scroll", ()=>{
+    if(!isDown){
+        resetInfiniteScroll();
+    }
+});
+</script>
+</body>
+</html>
