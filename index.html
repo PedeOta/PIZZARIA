@@ -72,6 +72,11 @@ header h1{
     background:rgba(0,0,0,0.55);
 }
 
+.photo-arrow:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+}
+
 .photo-prev{
     left:12px;
 }
@@ -245,7 +250,7 @@ header h1{
 .modal-img img{
     width:100%;
     height:100%;
-    object-fit:cover;
+    object-fit:contain;
 }
 
 .modal-info{
@@ -474,18 +479,32 @@ header h1{
 
 let currentProduct = null;
 
+const photoPrevButton = document.querySelector('.photo-prev');
+const photoNextButton = document.querySelector('.photo-next');
+const modalElement = document.getElementById('modal');
+
 function openModal(nome, preco, imagem, descricao = ''){
     currentProduct = nome;
     document.getElementById("modalTitle").innerText = nome;
     document.getElementById("modalDescription").innerText = descricao;
     document.getElementById("modalPrice").innerText = preco;
     document.getElementById("modalImg").innerHTML = `<img src="${imagem}" alt="${nome}">`;
-    document.getElementById("modal").style.display = "flex";
+    photoPrevButton.disabled = true;
+    photoNextButton.disabled = true;
+    modalElement.style.display = "flex";
 }
 
 function closeModal(){
     document.getElementById("modal").style.display = "none";
+    photoPrevButton.disabled = false;
+    photoNextButton.disabled = false;
 }
+
+modalElement.addEventListener('click', function(event){
+    if(event.target === modalElement){
+        closeModal();
+    }
+});
 
 function addToCart(){
     if(currentProduct){
