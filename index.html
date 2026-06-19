@@ -23,7 +23,7 @@ header{
     color:white;
     display:flex;
     align-items:center;
-    justify-content:center;
+    justify-content:space-between;
     gap:14px;
     text-align:center;
     padding:24px 20px;
@@ -55,6 +55,33 @@ header h1{
     letter-spacing:0.04em;
     text-shadow: 0 3px 10px rgba(0,0,0,0.35);
     z-index:1;
+}
+
+.address-section{
+    text-align:left;
+    flex-shrink:0;
+}
+
+.address-label{
+    font-size:0.75rem;
+    opacity:0.8;
+    margin-bottom:3px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+}
+
+.address-text{
+    font-size:0.9rem;
+    font-weight:500;
+    white-space:nowrap;
+}
+
+.header-center{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    flex:1;
 }
 
 /* CARROSSEL */
@@ -330,7 +357,13 @@ header h1{
 <body>
 
 <header>
-   <img src="images/logopizzaria.png"> <h1> A Arte da Pizza</h1>
+   <div class="address-section">
+       <div class="address-label">📍 Endereço</div>
+       <div class="address-text">Rua da Pizza, 456 - Centro</div>
+   </div>
+   <div class="header-center">
+       <img src="images/logopizzaria.png"> <h1> A Arte da Pizza</h1>
+   </div>
 </header>
 
 <div class="photo-carousel-container">
